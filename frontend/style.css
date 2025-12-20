@@ -1,0 +1,58 @@
+:root{
+    --bg:#f4f6f8;
+    --card:#ffffff;
+    --accent:#4f46e5;
+    --muted:#6b7280;
+    --success:#059669;
+    --danger:#ef4444;
+    --radius:12px;
+}
+
+*{box-sizing:border-box}
+body{
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    background:var(--bg);
+    color:#0f172a;
+    margin:0;
+    -webkit-font-smoothing:antialiased;
+}
+
+.container{max-width:980px;margin:0 auto;padding:20px}
+.topbar{padding:24px 0}
+.brand{margin:0;font-size:20px;font-weight:700}
+.tag{margin:4px 0 0;color:var(--muted)}
+
+.main-grid{display:grid;grid-template-columns:1fr 420px;gap:24px;align-items:start}
+
+.card{background:var(--card);padding:20px;border-radius:var(--radius);box-shadow:0 6px 18px rgba(15,23,42,0.06)}
+.form-card h2{margin:0 0 12px}
+.preview-card h3{margin:0 0 12px}
+
+label{display:block;font-size:13px;color:var(--muted);margin-top:12px}
+input, select, button{width:100%;padding:12px;border-radius:8px;border:1px solid #eef2f7;font-size:14px}
+input:focus,select:focus,button:focus{outline:none;box-shadow:0 0 0 4px rgba(79,70,229,0.08)}
+
+button{background:var(--accent);color:white;border:none;cursor:pointer;font-weight:600}
+.actions{display:flex;gap:12px;margin-top:16px}
+.actions button{flex:1}
+.actions #downloadBtn{background:#111827}
+
+.preview-wrap{min-height:260px;display:flex;align-items:center;justify-content:center;border-radius:8px;border:1px dashed #e6edf3;padding:10px}
+.preview-wrap img{max-width:100%;max-height:480px;display:block}
+
+#message{margin-top:12px;font-size:14px}
+#message.info{color:var(--muted)}
+#message.success{color:var(--success)}
+#message.warning{color:#b45309}
+#message.error{color:var(--danger)}
+
+.spinner{width:48px;height:48px;border-radius:50%;border:5px solid #eef2f7;border-top-color:var(--accent);animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.footer{margin:24px 0 40px;color:var(--muted);font-size:13px;text-align:center}
+
+/* Responsive */
+@media (max-width:900px){
+    .main-grid{grid-template-columns:1fr}
+    .preview-card{order:-1}
+}

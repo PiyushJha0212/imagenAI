@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Graphic AI Agent</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header class="topbar">
+    <div class="container">
+        <h1 class="brand">Graphic AI Agent</h1>
+        <p class="tag">Create professional posters & banners locally</p>
+    </div>
+</header>
+
+<main class="container main-grid">
+    <section class="card form-card" aria-labelledby="form-heading">
+        <h2 id="form-heading">Design Inputs</h2>
+
+        <label for="product">Product or Title</label>
+        <input id="product" placeholder="e.g., Winter Jacket Sale" />
+
+        <label for="use_case">Use case</label>
+        <select id="use_case">
+            <option value="sale">Sale</option>
+            <option value="event">Event</option>
+            <option value="branding">Branding</option>
+        </select>
+
+        <label for="platform">Layout</label>
+        <select id="platform">
+            <option value="instagram">Instagram (square)</option>
+            <option value="banner">Banner (wide)</option>
+            <option value="poster">Poster (tall)</option>
+        </select>
+
+        <label for="style">Style</label>
+        <select id="style">
+            <option value="minimal">Minimal</option>
+            <option value="corporate">Corporate</option>
+            <option value="festive">Festive</option>
+        </select>
+
+        <label for="width">Width (px)</label>
+        <input id="width" type="number" min="64" max="1024" value="384" />
+
+        <label for="steps">Steps (inference)</label>
+        <input id="steps" type="number" min="1" max="100" value="20" />
+
+        <label for="preset">Quick Preset</label>
+        <select id="preset">
+            <option value="balanced">Balanced (default)</option>
+            <option value="fast">Fast (fewer steps, smaller)</option>
+            <option value="quality">Quality (more steps)</option>
+        </select>
+
+        <div class="actions">
+            <button id="generateBtn" onclick="generate()">Generate Design</button>
+            <button id="downloadBtn" style="display:none">Download</button>
+        </div>
+
+        <div id="message" role="status" aria-live="polite"></div>
+    </section>
+
+    <aside class="card preview-card">
+        <h3>Preview</h3>
+        <div class="preview-wrap">
+            <div id="spinner" class="spinner" hidden></div>
+            <img id="result" alt="Generated design preview"/>
+        </div>
+    </aside>
+</main>
+
+<footer class="container footer">Runs locally · No files are uploaded externally</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
