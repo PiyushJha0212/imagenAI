@@ -1,20 +1,23 @@
 def build_prompt(product, use_case, platform, style):
-    base = "professional marketing design, high quality, clean layout"
+    subject = product.strip() or "product"
 
-    if use_case == "sale":
-        marketing = f"sale poster for {product}, bold headline, discount offer, eye-catching"
-    elif use_case == "event":
-        marketing = f"event promotion poster for {product}, attractive typography"
+    # Keep prompt SIMPLE and VISUAL
+    base = "high quality product photography, studio lighting, clean composition"
+
+    if style == "minimal":
+        style_hint = "minimal, white background, soft light"
+    elif style == "festive":
+        style_hint = "colorful background, vibrant lighting"
     else:
-        marketing = f"branding design for {product}, minimal logo focused"
+        style_hint = "modern, professional lighting"
 
-    if platform == "instagram":
-        layout = "square layout, instagram post, social media design"
-    elif platform == "banner":
-        layout = "wide banner, website header design"
+    if platform == "banner":
+        framing = "wide framing, subject on one side, empty space"
     else:
-        layout = "poster design, print ready"
+        framing = "centered composition"
 
-    style_hint = f"{style} style, modern, professional"
-
-    return f"{base}, {marketing}, {layout}, {style_hint}"
+    # CRITICAL: explicitly forbid text
+    return (
+        f"{base}, {subject}, {style_hint}, {framing}, "
+        f"photorealistic, sharp focus, no text, no letters, no typography"
+    )

@@ -38,6 +38,10 @@ async function generate() {
     }
     const btn = document.getElementById('generateBtn');
     const downloadBtn = document.getElementById('downloadBtn');
+    const guidance = parseFloat(document.getElementById('guidance').value || '7');
+    const negative_prompt = document.getElementById('negative_prompt').value.trim();
+    const seedVal = document.getElementById('seed').value;
+    const seed = seedVal ? parseInt(seedVal, 10) : null;
 
     if (!product) {
         setMessage('Please enter a product or title.', 'warning');
@@ -53,7 +57,7 @@ async function generate() {
         const resp = await fetch(API_BASE + "/generate", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ product, use_case, platform, style, width, steps })
+            body: JSON.stringify({ product, use_case, platform, style, width, steps, guidance_scale: guidance, negative_prompt, seed })
         });
 
         if (!resp.ok) {

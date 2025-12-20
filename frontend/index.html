@@ -64,6 +64,15 @@
             <button id="downloadBtn" style="display:none">Download</button>
         </div>
 
+        <label for="guidance">Guidance (CFG)</label>
+        <input id="guidance" type="range" min="1" max="12" value="7" />
+
+        <label for="negative_prompt">Negative prompt (optional)</label>
+        <textarea id="negative_prompt" placeholder="e.g. watermark, text, blurry" rows="2"></textarea>
+
+        <label for="seed">Seed (optional, integer)</label>
+        <input id="seed" type="number" placeholder="random if empty" />
+
         <div id="message" role="status" aria-live="polite"></div>
     </section>
 

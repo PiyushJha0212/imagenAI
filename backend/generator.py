@@ -1,122 +1,65 @@
 import torch
-from diffusers import StableDiffusionPipeline, DPMSolverMultistepScheduler
-import uuid
-import os
+from diffusers import StableDiffusionPipeline, EulerDiscreteScheduler
+import uuid, os
+from agent import build_prompt
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_DIR = os.path.join(BASE_DIR, "..", "outputs", "images")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 MODEL_ID = "runwayml/stable-diffusion-v1-5"
-
-pipe = StableDiffusionPipeline.from_pretrained(
-    MODEL_ID,
-    torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32
-)
-
-pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
-
+pipe = None
 device = "cuda" if torch.cuda.is_available() else "cpu"
-pipe = pipe.to(device)
 
-pipe.enable_attention_slicing()
-# Try to enable sequential CPU offload only when supported (accelerate installed)
-try:
-    import importlib
-    if importlib.util.find_spec("accelerate") is not None:
-        pipe.enable_sequential_cpu_offload()
-    else:
-        # accelerate not installed — skip CPU offload
-        pass
-except Exception as e:
-    # If enable_sequential_cpu_offload raises (missing accelerator, etc.),
-    # warn and continue without CPU offload so the server can start.
-    import warnings
-    warnings.warn(f"Could not enable sequential CPU offload: {e}")
+
+def get_pipe():
+    global pipe
+    if pipe is None:
+        # choose dtype based on device
+        dtype = torch.float16 if torch.cuda.is_available() else torch.float32
+        pipe = StableDiffusionPipeline.from_pretrained(
+            MODEL_ID,
+            torch_dtype=dtype
+        )
+        pipe.scheduler = EulerDiscreteScheduler.from_config(pipe.scheduler.config)
+        pipe = pipe.to(device)
+        pipe.enable_attention_slicing()
+    return pipe
+
 
 def _make_multiple_of_8(x: int) -> int:
-    return max(8, (x + 7) // 8 * 8)
+    return max(8, (int(x) + 7) // 8 * 8)
 
 
-def generate_design(product, use_case, platform, style, width=384, steps=20, guidance_scale=7.5, negative_prompt=None, seed=None):
-    # import locally to avoid import-time circular dependencies
-    build_prompt = None
-    try:
-        import agent as agent_mod
-        build_prompt = getattr(agent_mod, "build_prompt", None)
-    except Exception:
-        build_prompt = None
+def generate_design(product, use_case, platform, style,
+                    width=384, steps=20, guidance_scale=6.5,
+                    negative_prompt=None, seed=None):
 
-    # If agent.build_prompt is unavailable (circular import or missing),
-    # fall back to a local implementation that mirrors the agent logic.
-    if not callable(build_prompt):
-        def build_prompt(product, use_case, platform, style):
-            # Stronger product-focused prompt for higher-quality results
-            subject = product.strip() or "product"
-
-            # Base intent
-            base = "highly detailed product photography, studio lighting, sharp details, realistic, high resolution"
-
-            # Marketing-specific instructions
-            if use_case == "sale":
-                marketing = f"close-up of {subject}, centered product, clean white background, simple composition, prominent text area for headline"
-            elif use_case == "event":
-                marketing = f"stylized promotional shot for {subject}, dynamic composition, vibrant colors, bold typography space"
-            else:
-                marketing = f"branding-focused image for {subject}, minimalist layout, logo-friendly space, clean aesthetic"
-
-            # Layout hints
-            if platform == "instagram":
-                layout = "square composition, product centered"
-            elif platform == "banner":
-                layout = "wide composition, left or right aligned product with negative space"
-            else:
-                layout = "tall composition, poster layout, printable quality"
-
-            # Style hints
-            style_hint = f"{style} style, modern, professional, cinematic lighting"
-
-            # Combine and encourage photorealism
-            return f"{base}, {marketing}, {layout}, {style_hint}, photorealistic, extremely detailed, 8k"
+    pipe = get_pipe()
 
     prompt = build_prompt(product, use_case, platform, style)
 
-    # Determine aspect ratio / height based on platform
+    # Ensure dimensions are multiples of 8
     try:
         width = int(width)
     except Exception:
         width = 384
     width = _make_multiple_of_8(width)
 
-    if platform == 'instagram':
-        height = width
-    elif platform == 'banner':
-        # wide banner: 3:1 (width:height)
-        height = max(8, int(width / 3))
-    else:
-        # poster: taller (2:3 width:height -> height = width * 1.5)
+    if platform == "banner":
+        height = max(8, width // 3)
+    elif platform == "poster":
         height = max(8, int(width * 1.5))
+    else:
+        height = width
 
     height = _make_multiple_of_8(height)
 
-    # Reduce steps by default to speed up generation on low-spec machines
-    try:
-        steps = int(steps)
-    except Exception:
-        steps = 20
-
-    try:
-        guidance_scale = float(guidance_scale)
-    except Exception:
-        guidance_scale = 7.5
-
-    # sensible negative prompts to reduce artifacts and text
+    # default negative prompt to reduce text/artifacts
     if not negative_prompt:
-        negative_prompt = (
-            "lowres, text, watermark, blurry, deformed, poorly drawn, extra limbs, ugly, duplicate"
-        )
+        negative_prompt = "text, letters, watermark, logo, blurry, low quality, deformed"
 
-    # If a seed is provided, use a deterministic generator
+    # seed handling
     gen = None
     if seed is not None:
         try:
@@ -125,16 +68,21 @@ def generate_design(product, use_case, platform, style, width=384, steps=20, gui
         except Exception:
             gen = None
 
-    # Call pipeline with explicit steps, guidance, and negative prompt
-    call_kwargs = dict(num_inference_steps=steps, width=width, height=height, guidance_scale=guidance_scale, negative_prompt=negative_prompt)
-    if gen is not None:
-        call_kwargs['generator'] = gen
+    with torch.inference_mode():
+        call_kwargs = dict(
+            prompt=prompt,
+            width=width,
+            height=height,
+            num_inference_steps=int(steps),
+            guidance_scale=float(guidance_scale),
+            negative_prompt=negative_prompt,
+        )
+        if gen is not None:
+            call_kwargs["generator"] = gen
 
-    image = pipe(prompt, **call_kwargs).images[0]
+        image = pipe(**call_kwargs).images[0]
 
     filename = f"{uuid.uuid4()}.png"
     path = os.path.join(OUTPUT_DIR, filename)
     image.save(path)
-
-    # Return absolute filesystem path (backend will convert to a web URL)
     return path
