@@ -29,11 +29,14 @@ class DesignRequest(BaseModel):
     use_case: str
     platform: str
     style: str
+    template: str = "sale_poster"
     width: int = 384
     steps: int = 20
     guidance_scale: float = 7.5
     negative_prompt: Optional[str] = None
     seed: Optional[int] = None
+    profile: str = "balanced"
+    exact: bool = False
 
 
 @app.post("/generate")
@@ -43,11 +46,14 @@ def generate(data: DesignRequest):
         data.use_case,
         data.platform,
         data.style,
+        template=data.template,
         width=data.width,
         steps=data.steps,
         guidance_scale=data.guidance_scale,
         negative_prompt=data.negative_prompt,
         seed=data.seed,
+        profile=data.profile,
+        exact=data.exact,
     )
 
     # image_path is a filesystem path; return a web URL path under /images
