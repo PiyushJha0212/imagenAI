@@ -5,7 +5,7 @@ from typing import Optional
 from generator import generate_design
 import os
 
-app = FastAPI(title="Graphic AI Agent")
+app = FastAPI(title="Imagen AI")
 
 # Serve generated images from the outputs/images directory at /images
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -64,3 +64,9 @@ def generate(data: DesignRequest):
         "status": "success",
         "image_path": web_path
     }
+
+
+# Lightweight health endpoint for quick checks (does not invoke the generator)
+@app.get("/ping")
+def ping():
+    return {"status": "ok", "msg": "Imagen AI backend is reachable"}

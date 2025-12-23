@@ -1,0 +1,224 @@
+<!-- <!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Graphic AI Agent</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header class="topbar">
+    <div class="container">
+        <h1 class="brand">Graphic AI Agent</h1>
+        <p class="tag">Create professional posters & banners locally</p>
+    </div>
+</header>
+
+<section class="container hero">
+    <h2>Offline Graphic Designer powered by Stable Diffusion</h2>
+    <p class="muted">Generate background & product visuals locally — text, layout and CTAs are handled in the browser for precise, editable designs.</p>
+    <div class="hero-actions">
+        <a class="button" href="#form-heading">Try Live Demo</a>
+    </div>
+</section>
+
+<section class="container features" aria-label="features">
+    <div class="feature">
+        <div class="icon">
+            <!-- Offline SVG -->
+            <!-- <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="2" y="4" width="20" height="14" rx="2" stroke="#4f46e5" stroke-width="1.5" fill="none"/>
+                <path d="M8 8h8M8 12h5" stroke="#4f46e5" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <h4>Fully Offline</h4>
+        <p>All generation runs locally on your machine — no cloud, no uploads.</p>
+    </div>
+
+    <div class="feature">
+        <div class="icon">
+            <!-- Speed SVG -->
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 12h3l2-6 4 12 3-8 4 2" stroke="#059669" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+        </div>
+        <h4>CPU-Friendly Modes</h4>
+        <p>Fast / Balanced / High Quality profiles let you trade speed and fidelity safely.</p>
+    </div>
+
+    <div class="feature">
+        <div class="icon">
+            <!-- Design SVG -->
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="8" r="3" stroke="#111827" stroke-width="1.5" fill="none"/>
+                <rect x="6" y="13" width="12" height="6" rx="1" stroke="#111827" stroke-width="1.5" fill="none"/>
+            </svg>
+        </div>
+        <h4>Designer-First</h4>
+        <p>Generate visuals only; the UI handles titles, CTA buttons and layout composition.</p>
+    </div>
+</section>
+
+<section class="container how" aria-label="how it works">
+    <h3>How it works</h3>
+    <ol>
+        <li><strong>Pick format:</strong> choose Poster, Banner or Instagram layout.</li>
+        <li><strong>Generate visuals:</strong> the model creates product/background imagery with no text.</li>
+        <li><strong>Compose in UI:</strong> add headline, CTA, color and export the final PNG — all client-side.</li>
+    </ol>
+</section>
+
+<section class="container docs" id="docs">
+    <h3>Quick Docs</h3>
+    <ul>
+        <li><strong>Deterministic outputs:</strong> same inputs produce the same images (seeding + hashing).</li>
+        <li><strong>Performance profiles:</strong> use <em>Fast</em> on low-spec laptops; choose <em>High</em> only with GPU.</li>
+        <li><strong>No in-image text:</strong> all text and CTAs are applied by the frontend for clarity and editability.</li>
+        <li><strong>Export:</strong> composed PNG includes overlays rendered on canvas — perfect for sharing.</li>
+    </ul>
+    <p class="muted small">Developer note: See the `backend/run.py` API for fields: <code>profile</code>, <code>exact</code>, <code>guidance_scale</code>, <code>negative_prompt</code>, <code>seed</code>.</p>
+</section>
+
+<main class="container main-grid">
+    <section class="card form-card" aria-labelledby="form-heading">
+        <h2 id="form-heading">Design Inputs</h2>
+
+        <label for="product">Product or Title</label>
+        <input id="product" placeholder="e.g., Winter Jacket Sale" />
+
+        <label for="use_case">Use case</label>
+        <select id="use_case">
+            <option value="sale">Sale</option>
+            <option value="event">Event</option>
+            <option value="branding">Branding</option>
+        </select>
+
+        <label for="platform">Layout</label>
+        <select id="platform">
+            <option value="instagram">Instagram (square)</option>
+            <option value="banner">Banner (wide)</option>
+            <option value="poster">Poster (tall)</option>
+        </select>
+
+        <label for="style">Style</label>
+        <select id="style">
+            <option value="minimal">Minimal</option>
+            <option value="corporate">Corporate</option>
+            <option value="festive">Festive</option>
+        </select>
+
+        <label for="width">Width (px)</label>
+        <input id="width" type="number" min="64" max="1024" value="384" />
+
+        <label for="steps">Steps (inference)</label>
+        <input id="steps" type="number" min="1" max="100" value="20" />
+
+        <label for="preset">Quick Preset</label>
+        <select id="preset">
+            <option value="balanced">Balanced (default)</option>
+            <option value="fast">Fast (fewer steps, smaller)</option>
+            <option value="quality">Quality (more steps)</option>
+        </select>
+
+        <label for="template">Template</label>
+        <select id="template">
+            <option value="sale">Sale Poster (headline + subtitle + CTA)</option>
+            <option value="event">Event Poster (large headline + date)</option>
+            <option value="banner">Website Banner (left logo + right CTA)</option>
+        </select>
+
+        <p class="muted" id="templateHelp">Templates reserve safe space for text; AI generates visuals only.</p>
+
+        <div class="inline-controls">
+            <label class="switch"><input id="perfToggle" type="checkbox" /><span class="slider"></span></label>
+            <label for="perfToggle" class="switch-label">Performance Mode (Fast)</label>
+        </div>
+
+        <label class="exact-label"><input id="exactAspect" type="checkbox" /> Generate exact aspect (higher cost)</label>
+
+        <label for="profile">Performance Profile</label>
+        <select id="profile">
+            <option value="fast">Fast (CPU-safe)</option>
+            <option value="balanced" selected>Balanced</option>
+            <option value="high">High Quality (GPU only)</option>
+        </select>
+
+        <div class="actions">
+            <button id="generateBtn" onclick="generate()">Generate Design</button>
+            <button id="downloadBtn" style="display:none">Download</button>
+        </div>
+
+        <label for="guidance">Guidance (CFG)</label>
+        <input id="guidance" type="range" min="1" max="12" value="7" />
+
+        <label for="negative_prompt">Negative prompt (optional)</label>
+        <textarea id="negative_prompt" placeholder="e.g. watermark, text, blurry" rows="2"></textarea>
+
+        <label for="seed">Seed (optional, integer)</label>
+        <input id="seed" type="number" placeholder="random if empty" />
+
+        <div id="message" role="status" aria-live="polite"></div>
+    </section>
+
+    <aside class="card preview-card">
+        <h3>Preview</h3>
+        <div class="preview-wrap">
+            <div id="spinner" class="spinner" hidden></div>
+            <div id="imageContainer" class="image-container">
+                <img id="result" alt="Generated design preview"/>
+                <div id="overlay" class="overlay">
+                    <img id="overlayLogo" class="overlay-logo" hidden alt="brand logo" />
+                    <div id="overlayTitle" class="overlay-title"></div>
+                    <button id="overlayBtn" class="overlay-cta"></button>
+                </div>
+            </div>
+        </div>
+        <div class="overlay-controls">
+            <label for="titleText">Headline</label>
+            <input id="titleText" placeholder="Big headline (template-controlled)" />
+
+            <label for="subtitleText">Subtitle (optional)</label>
+            <input id="subtitleText" placeholder="Secondary line or offer" />
+
+            <label for="ctaText">CTA text (button)</label>
+            <input id="ctaText" placeholder="e.g., Shop now" />
+
+            <label for="ctaColor">CTA color</label>
+            <input id="ctaColor" type="color" value="#111827" />
+
+            <label for="titleColor">Title color</label>
+            <input id="titleColor" type="color" value="#ffffff" />
+
+            <label for="logoInput">Brand logo (top-left)</label>
+            <input id="logoInput" type="file" accept="image/*" />
+
+            <label for="logoScale">Logo scale</label>
+            <input id="logoScale" type="range" min="40" max="220" value="120" />
+
+            <label for="position">Overlay position (templates control position)</label>
+            <select id="position">
+                <option value="bottom-left">Bottom Left</option>
+                <option value="bottom-right">Bottom Right</option>
+                <option value="top-left">Top Left</option>
+                <option value="top-right">Top Right</option>
+                <option value="center">Center</option>
+            </select>
+
+            <button id="exportBtn">Export Final Design</button>
+        </div>
+    </aside>
+</main>
+
+<footer class="container footer">Runs locally · No files are uploaded externally</footer>
+
+<script src="app.js"></script> -->
+</body>
+</html> -->
+ -->
+
+
+

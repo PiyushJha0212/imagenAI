@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Graphic AI Agent</title>
+    <title>Imagen AI</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,17 +12,27 @@
 <body>
 
 <header class="topbar">
-    <div class="container">
-        <h1 class="brand">Graphic AI Agent</h1>
-        <p class="tag">Create professional posters & banners locally</p>
+    <div class="container nav-row">
+        <div class="brand-wrap">
+            <div class="brand-logo">IA</div>
+            <h1 class="brand">Imagen AI</h1>
+        </div>
+        <nav class="nav-links">
+            <a class="nav-link" href="index.html">Home</a>
+            <a class="nav-link" href="about.html">About</a>
+            <a class="button small" href="try.html">Try It</a>
+        </nav>
     </div>
 </header>
 
-<section class="container hero">
-    <h2>Offline Graphic Designer powered by Stable Diffusion</h2>
-    <p class="muted">Generate background & product visuals locally — text, layout and CTAs are handled in the browser for precise, editable designs.</p>
-    <div class="hero-actions">
-        <a class="button" href="#form-heading">Try Live Demo</a>
+<section class="container hero dark-hero">
+    <div class="hero-inner">
+        <div class="hero-badge">AI-Powered Poster Generation</div>
+        <h2 class="hero-title">Create Industry-Ready Posters<br/><span class="hero-accent">Offline Using AI</span></h2>
+        <p class="hero-sub">Generate high-quality promotional posters using simple text prompts — no internet required. Perfect for manufacturing and marketing teams.</p>
+        <div class="hero-actions">
+            <a class="cta-gradient" href="#form-heading">Try It Yourself</a>
+        </div>
     </div>
 </section>
 
@@ -83,131 +93,51 @@
     <p class="muted small">Developer note: See the `backend/run.py` API for fields: <code>profile</code>, <code>exact</code>, <code>guidance_scale</code>, <code>negative_prompt</code>, <code>seed</code>.</p>
 </section>
 
-<main class="container main-grid">
-    <section class="card form-card" aria-labelledby="form-heading">
-        <h2 id="form-heading">Design Inputs</h2>
-
-        <label for="product">Product or Title</label>
-        <input id="product" placeholder="e.g., Winter Jacket Sale" />
-
-        <label for="use_case">Use case</label>
-        <select id="use_case">
-            <option value="sale">Sale</option>
-            <option value="event">Event</option>
-            <option value="branding">Branding</option>
-        </select>
-
-        <label for="template">Template</label>
-        <select id="template">
-            <option value="sale_poster">Sale Poster (vertical)</option>
-            <option value="event_poster">Event Poster (vertical)</option>
-            <option value="website_banner">Website Banner (horizontal)</option>
-            <option value="instagram">Instagram (square)</option>
-        </select>
-
-        <label for="platform">Layout</label>
-        <select id="platform">
-            <option value="instagram">Instagram (square)</option>
-            <option value="banner">Banner (wide)</option>
-            <option value="poster">Poster (tall)</option>
-        </select>
-
-        <label for="style">Style</label>
-        <select id="style">
-            <option value="minimal">Minimal</option>
-            <option value="corporate">Corporate</option>
-            <option value="festive">Festive</option>
-        </select>
-
-        <!-- Simplified controls: product, use case, template, layout, style, preset -->
-        <label for="width" hidden>Width (px)</label>
-        <input id="width" type="number" min="64" max="1024" value="384" hidden />
-
-        <label for="steps" hidden>Steps (inference)</label>
-        <input id="steps" type="number" min="1" max="100" value="20" hidden />
-
-        <label for="preset">Quick Preset</label>
-        <select id="preset">
-            <option value="balanced">Balanced (default)</option>
-            <option value="fast">Fast (fewer steps, smaller)</option>
-            <option value="quality">Quality (more steps)</option>
-        </select>
-
-        <!-- Advanced controls hidden for simplicity -->
-        <div class="inline-controls" hidden>
-            <label class="switch"><input id="perfToggle" type="checkbox" /><span class="slider"></span></label>
-            <label for="perfToggle" class="switch-label">Performance Mode (Fast)</label>
-        </div>
-
-        <label class="exact-label" hidden><input id="exactAspect" type="checkbox" /> Generate exact aspect (higher cost)</label>
-
-        <label for="profile" hidden>Performance Profile</label>
-        <select id="profile" hidden>
-            <option value="fast">Fast (CPU-safe)</option>
-            <option value="balanced" selected>Balanced</option>
-            <option value="high">High Quality (GPU only)</option>
-        </select>
-
-        <div class="actions">
-            <button id="generateBtn" onclick="generate()">Generate Design</button>
-            <button id="downloadBtn" style="display:none" disabled>Download</button>
-        </div>
-
-        <label for="guidance" hidden>Guidance (CFG)</label>
-        <input id="guidance" type="range" min="1" max="12" value="7" hidden />
-
-        <label for="negative_prompt" hidden>Negative prompt (optional)</label>
-        <textarea id="negative_prompt" placeholder="e.g. watermark, text, blurry" rows="2" hidden></textarea>
-
-        <label for="seed" hidden>Seed (optional, integer)</label>
-        <input id="seed" type="number" placeholder="random if empty" hidden />
-
-        <div id="message" role="status" aria-live="polite"></div>
+<main class="container">
+    <section class="docs card">
+        <h2>About Imagen AI</h2>
+        <p class="muted">Imagen AI is an advanced AI-powered solution that helps industries create stunning promotional posters offline using simple text prompts. Our technology reduces dependency on professional designers and eliminates the need for internet connectivity, making poster creation accessible to teams everywhere.</p>
     </section>
 
-    <aside class="card preview-card">
-        <h3>Preview</h3>
-        <div class="preview-wrap">
-            <div id="spinner" class="spinner" hidden></div>
-            <div id="imageContainer" class="image-container">
-                <img id="result" alt="Generated design preview"/>
-                <div id="overlay" class="overlay">
-                    <img id="overlayLogo" class="overlay-logo" hidden alt="brand logo" />
-                    <div id="overlayTitle" class="overlay-title"></div>
-                    <button id="overlayBtn" class="overlay-cta"></button>
-                </div>
+    <section class="container features" aria-label="features">
+        <h3 style="color:#f8fafc">Why Imagen AI?</h3>
+        <div class="features">
+            <div class="feature">
+                <div class="icon">📡</div>
+                <h4>Works Completely Offline</h4>
+                <p>No internet dependency — generate posters securely in remote environments.</p>
+            </div>
+            <div class="feature">
+                <div class="icon">💬</div>
+                <h4>Easy Prompt-Based Interface</h4>
+                <p>Describe your needs in plain language and let the AI handle the design work.</p>
+            </div>
+            <div class="feature">
+                <div class="icon">🏢</div>
+                <h4>Designed for Business</h4>
+                <p>Tailored templates and styles for professional marketing use cases.</p>
             </div>
         </div>
-        <div class="overlay-controls">
-            <label for="titleText">Title text (UI overlay)</label>
-            <input id="titleText" placeholder="Big headline, handled by UI" disabled />
+    </section>
 
-            <label for="ctaText">CTA text (button)</label>
-            <input id="ctaText" placeholder="e.g., Shop now" disabled />
-
-            <label for="ctaColor">CTA color</label>
-            <input id="ctaColor" type="color" value="#111827" disabled />
-
-            <label for="titleColor">Title color</label>
-            <input id="titleColor" type="color" value="#ffffff" disabled />
-
-                <label for="subtitleText">Subtitle (event poster only)</label>
-                <input id="subtitleText" placeholder="Supporting subtitle (event poster)" disabled />
-
-            <label for="logoInput">Brand logo (top-left)</label>
-            <input id="logoInput" type="file" accept="image/*" disabled />
-
-            <label for="logoScale">Logo scale</label>
-            <input id="logoScale" type="range" min="40" max="220" value="120" disabled />
-
-            <label for="position">Overlay position</label>
-            <select id="position" disabled>
-                <option value="template">(controlled by template)</option>
-            </select>
-
-            <button id="exportBtn" disabled>Export Final Design</button>
+    <section class="container gallery card">
+        <h3>Samples & Context</h3>
+        <div class="gallery-row">
+            <div class="photo-placeholder">Image A</div>
+            <div class="photo-placeholder">Image B</div>
+            <div class="photo-placeholder">Image C</div>
         </div>
-    </aside>
+    </section>
+
+    <section class="container docs card" id="docs">
+        <h3>Quick Docs</h3>
+        <ul>
+            <li><strong>Deterministic outputs:</strong> same inputs produce the same images (seeding + hashing).</li>
+            <li><strong>Performance profiles:</strong> use <em>Fast</em> on low-spec laptops; choose <em>High</em> only with GPU.</li>
+            <li><strong>No in-image text:</strong> all text and CTAs are applied by the frontend for clarity and editability.</li>
+            <li><strong>Export:</strong> composed PNG includes overlays rendered on canvas — perfect for sharing.</li>
+        </ul>
+    </section>
 </main>
 
 <footer class="container footer">Runs locally · No files are uploaded externally</footer>

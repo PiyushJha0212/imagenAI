@@ -1,9 +1,11 @@
 :root{
-    --bg:#f4f6f8;
-    --card:#ffffff;
-    --accent:#4f46e5;
-    --muted:#6b7280;
-    --success:#059669;
+    --bg:#0b0f1a;
+    --surface:#0f1724;
+    --card:#0b1220;
+    --accent1:#8b5cf6;
+    --accent2:#06b6d4;
+    --muted:#9aa4b2;
+    --success:#10b981;
     --danger:#ef4444;
     --radius:12px;
 }
@@ -11,22 +13,29 @@
 *{box-sizing:border-box}
 body{
     font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-    background:var(--bg);
-    color:#0f172a;
+    background: radial-gradient(800px 400px at 10% 10%, rgba(139,92,246,0.08), transparent), var(--bg);
+    color:#e6eef8;
     margin:0;
     -webkit-font-smoothing:antialiased;
 }
 
-.container{max-width:980px;margin:0 auto;padding:20px}
-.topbar{padding:24px 0}
-.brand{margin:0;font-size:20px;font-weight:700}
-.tag{margin:4px 0 0;color:var(--muted)}
+.container{max-width:1200px;margin:0 auto;padding:28px}
+.topbar{padding:18px 0}
+.nav-row{display:flex;align-items:center;justify-content:space-between}
+.brand-wrap{display:flex;align-items:center;gap:12px}
+.brand-logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--accent1),var(--accent2));display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+.brand{margin:0;font-size:18px;font-weight:700;color:var(--muted)}
+.nav-links{display:flex;gap:16px;align-items:center}
+.nav-link{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:8px}
+.nav-link:hover{background:rgba(255,255,255,0.02)}
 
-.hero{background:linear-gradient(90deg,#ffffff 0%, #f8fafc 100%);padding:28px;border-radius:12px;margin-bottom:18px}
-.hero h2{margin:0;font-size:22px}
-.hero .muted{color:var(--muted);margin-top:8px}
-.hero-actions{margin-top:12px}
-.button{display:inline-block;padding:10px 16px;background:var(--accent);color:white;border-radius:8px;text-decoration:none}
+.hero.dark-hero{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:80px 28px;border-radius:16px;margin-bottom:28px;color:var(--muted);position:relative;overflow:hidden}
+.hero-inner{max-width:920px;margin:0 auto;text-align:center}
+.hero-badge{display:inline-block;padding:8px 16px;background:rgba(255,255,255,0.03);border-radius:999px;color:var(--accent2);font-size:13px;margin-bottom:18px}
+.hero-title{font-size:56px;line-height:1.02;margin:10px 0;color:#f8fafc}
+.hero-accent{background:linear-gradient(90deg,var(--accent1),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero-sub{color:var(--muted);max-width:780px;margin:14px auto 18px}
+.cta-gradient{display:inline-block;padding:14px 28px;border-radius:999px;color:white;text-decoration:none;font-weight:700;background:linear-gradient(90deg,var(--accent1),var(--accent2));box-shadow:0 10px 30px rgba(11,15,26,0.6)}
 
 .inline-controls{display:flex;align-items:center;gap:8px;margin-top:8px}
 .switch{position:relative;display:inline-block;width:44px;height:24px}
@@ -39,42 +48,44 @@ body{
 .exact-label{display:block;margin-top:8px;font-size:13px;color:var(--muted)}
 
 .features{display:flex;gap:18px;margin-top:12px;margin-bottom:18px}
-.feature{flex:1;background:linear-gradient(180deg,#fff 0%, #fbfdff 100%);padding:16px;border-radius:10px;box-shadow:0 6px 14px rgba(15,23,42,0.04);text-align:center}
+.feature{flex:1;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:10px;box-shadow:0 10px 30px rgba(2,6,23,0.6);text-align:left}
 .feature .icon{display:flex;align-items:center;justify-content:center;height:56px}
-.feature h4{margin:10px 0 6px;font-size:16px}
+.feature h4{margin:6px 0 8px;font-size:16px;color:#f8fafc}
 .feature p{margin:0;color:var(--muted);font-size:13px}
 
 .how{background:transparent;padding:18px 0}
 .how h3{margin:0 0 8px}
 .how ol{margin:8px 0 0;padding-left:20px;color:var(--muted)}
 
-.docs{background:#ffffff;padding:18px;border-radius:10px;box-shadow:0 6px 18px rgba(15,23,42,0.04);margin-top:18px}
-.docs h3{margin-top:0}
+.docs{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:10px;box-shadow:0 10px 30px rgba(2,6,23,0.6);margin-top:18px}
+.docs h3{margin-top:0;color:#f8fafc}
 .docs ul{margin:8px 0 0;padding-left:18px;color:var(--muted)}
 .docs .small{font-size:12px;margin-top:8px}
 
 .main-grid{display:grid;grid-template-columns:1fr 420px;gap:24px;align-items:start}
 
-.card{background:var(--card);padding:20px;border-radius:var(--radius);box-shadow:0 6px 18px rgba(15,23,42,0.06)}
+.card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:20px;border-radius:var(--radius);box-shadow:0 10px 30px rgba(2,6,23,0.6)}
 .form-card h2{margin:0 0 12px}
 .preview-card h3{margin:0 0 12px}
 
 label{display:block;font-size:13px;color:var(--muted);margin-top:12px}
-input, select, button{width:100%;padding:12px;border-radius:8px;border:1px solid #eef2f7;font-size:14px}
-input:focus,select:focus,button:focus{outline:none;box-shadow:0 0 0 4px rgba(79,70,229,0.08)}
+input, select, button{width:100%;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--muted);font-size:14px}
+input:focus,select:focus,button:focus{outline:none;box-shadow:0 0 0 6px rgba(139,92,246,0.06)}
 
-button{background:var(--accent);color:white;border:none;cursor:pointer;font-weight:600}
+button{background:var(--accent1);color:white;border:none;cursor:pointer;font-weight:600}
 .actions{display:flex;gap:12px;margin-top:16px}
 .actions button{flex:1}
-.actions #downloadBtn{background:#111827}
+.actions #downloadBtn{background:#0b1220;color:var(--muted)}
 
-.preview-wrap{min-height:260px;display:flex;align-items:center;justify-content:center;border-radius:8px;border:1px dashed #e6edf3;padding:10px}
-.image-container{position:relative;overflow:hidden;border-radius:8px;background:#f8fafc;width:100%;height:420px;display:flex;align-items:center;justify-content:center}
+.preview-wrap{min-height:260px;display:flex;align-items:center;justify-content:center;border-radius:12px;border:1px dashed rgba(255,255,255,0.03);padding:10px}
+.image-container{position:relative;overflow:hidden;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));width:100%;height:420px;display:flex;align-items:center;justify-content:center}
 .image-container img{max-width:none;min-width:100%;min-height:100%;object-fit:cover;display:block}
 .overlay{position:absolute;inset:0;pointer-events:none}
 .overlay-title{position:absolute;left:50%;transform:translateX(-50%);top:24px;font-size:36px;color:white;text-shadow:0 6px 18px rgba(0,0,0,0.6);pointer-events:none;max-width:85%;text-align:center}
-.overlay-cta{position:absolute;left:20px;bottom:20px;padding:10px 16px;background:#111827;color:white;border-radius:8px;border:none;pointer-events:auto}
-.overlay-logo{position:absolute;left:16px;top:16px;height:64px;width:auto;pointer-events:none}
+.overlay-cta{position:absolute;left:20px;bottom:20px;padding:10px 16px;background:rgba(0,0,0,0.6);color:white;border-radius:8px;border:none;pointer-events:auto}
+.overlay-logo{position:absolute;left:16px;top:16px;height:64px;width:auto;pointer-events:none;z-index:40}
+/* override the generic image sizing so overlay logos don't expand to fill the container */
+.overlay-logo{min-width:initial;min-height:initial;max-width:30%;max-height:22%;object-fit:contain}
 
 .overlay-controls{margin-top:12px;display:flex;flex-direction:column;gap:8px}
 .overlay-controls input, .overlay-controls select, .overlay-controls label, .overlay-controls button, .overlay-controls textarea{width:100%;}
@@ -85,10 +96,13 @@ button{background:var(--accent);color:white;border:none;cursor:pointer;font-weig
 #message.warning{color:#b45309}
 #message.error{color:var(--danger)}
 
-.spinner{width:48px;height:48px;border-radius:50%;border:5px solid #eef2f7;border-top-color:var(--accent);animation:spin 1s linear infinite}
+.spinner{width:48px;height:48px;border-radius:50%;border:5px solid rgba(255,255,255,0.06);border-top-color:var(--accent1);animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 .footer{margin:24px 0 40px;color:var(--muted);font-size:13px;text-align:center}
+
+.gallery-row{display:flex;gap:12px;margin-top:12px}
+.photo-placeholder{flex:1;height:160px;border-radius:8px;background:linear-gradient(135deg, rgba(139,92,246,0.12), rgba(6,182,212,0.06));display:flex;align-items:center;justify-content:center;color:var(--muted)}
 
 /* Responsive */
 @media (max-width:900px){

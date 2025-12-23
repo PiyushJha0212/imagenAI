@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Try — Imagen AI</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+    <div class="container nav-row">
+        <div class="brand-wrap">
+            <div class="brand-logo">IA</div>
+            <h1 class="brand">Imagen AI</h1>
+        </div>
+        <nav class="nav-links">
+            <a class="nav-link" href="index.html">Home</a>
+            <a class="nav-link" href="about.html">About</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container main-grid">
+    <section class="card form-card" aria-labelledby="form-heading">
+        <h2 id="form-heading">Generate Your Poster</h2>
+
+        <label for="product">Product or Title</label>
+        <input id="product" placeholder="e.g., Winter Jacket Sale" />
+
+        <label for="use_case">Use case</label>
+        <select id="use_case">
+            <option value="sale">Sale</option>
+            <option value="event">Event</option>
+            <option value="branding">Branding</option>
+        </select>
+
+        <label for="template">Template</label>
+        <select id="template">
+            <option value="sale_poster">Sale Poster (vertical)</option>
+            <option value="event_poster">Event Poster (vertical)</option>
+            <option value="website_banner">Website Banner (horizontal)</option>
+            <option value="instagram">Instagram (square)</option>
+        </select>
+
+        <label for="style">Style</label>
+        <select id="style">
+            <option value="minimal">Minimal</option>
+            <option value="corporate">Corporate</option>
+            <option value="festive">Festive</option>
+        </select>
+
+        <label for="preset">Quick Preset</label>
+        <select id="preset">
+            <option value="balanced">Balanced (default)</option>
+            <option value="fast">Fast (fewer steps, smaller)</option>
+            <option value="quality">Quality (more steps)</option>
+        </select>
+
+        <div class="actions">
+            <button id="generateBtn" onclick="generate()">Generate Design</button>
+            <button id="downloadBtn" style="display:none" disabled>Download</button>
+        </div>
+
+        <div id="message" role="status" aria-live="polite"></div>
+    </section>
+
+    <aside class="card preview-card">
+        <h3>Preview</h3>
+        <div class="preview-wrap">
+            <div id="spinner" class="spinner" hidden></div>
+            <div id="imageContainer" class="image-container">
+                <img id="result" alt="Generated design preview"/>
+                <div id="overlay" class="overlay">
+                    <img id="overlayLogo" class="overlay-logo" hidden alt="brand logo" />
+                    <div id="overlayTitle" class="overlay-title"></div>
+                    <button id="overlayBtn" class="overlay-cta"></button>
+                </div>
+            </div>
+        </div>
+        <div class="overlay-controls">
+            <label for="titleText">Title text (UI overlay)</label>
+            <input id="titleText" placeholder="Big headline, handled by UI" disabled />
+
+            <label for="ctaText">CTA text (button)</label>
+            <input id="ctaText" placeholder="e.g., Shop now" disabled />
+
+            <label for="logoInput">Brand logo (top-left)</label>
+            <input id="logoInput" type="file" accept="image/*" disabled />
+
+            <label for="logoScale">Logo scale</label>
+            <input id="logoScale" type="range" min="40" max="220" value="120" disabled />
+
+            <button id="exportBtn" disabled>Export Final Design</button>
+        </div>
+    </aside>
+</main>
+
+<footer class="container footer">Runs locally · No files are uploaded externally</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

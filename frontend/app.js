@@ -1,30 +1,35 @@
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE = "http://127.0.0.1:9000";
+
+// Safe DOM helpers
+function $id(id){ return document.getElementById(id); }
+function getVal(id, fallback=''){
+    const el = $id(id); if(!el) return fallback; if(el.type === 'checkbox') return el.checked; return el.value;
+}
+function getNum(id, fallback=0){ const v = getVal(id, null); if(v===null || v==='') return fallback; const n = parseInt(v,10); return isNaN(n)?fallback:n; }
 
 function setMessage(text, type = 'info') {
-    const el = document.getElementById('message');
-    el.textContent = text;
-    el.className = type;
+    const el = $id('message');
+    if (!el) return; el.textContent = text; el.className = type;
 }
 
 function showSpinner(show) {
-    const s = document.getElementById('spinner');
-    const img = document.getElementById('result');
+    const s = $id('spinner');
+    const img = $id('result');
     if (show) {
-        s.hidden = false;
-        img.src = '';
-        img.style.display = 'none';
+        if (s) s.hidden = false;
+        if (img) { img.src = ''; img.style.display = 'none'; }
     } else {
-        s.hidden = true;
-        img.style.display = '';
+        if (s) s.hidden = true;
+        if (img) img.style.display = '';
     }
 }
 
 async function generate() {
-    const product = document.getElementById("product").value.trim();
-    const use_case = document.getElementById("use_case").value;
-    const platformEl = document.getElementById("platform");
+    const product = (getVal("product", '') || '').trim();
+    const use_case = getVal("use_case", 'sale');
+    const platformEl = $id("platform");
     let platform = platformEl ? platformEl.value : '';
-    const template = document.getElementById('template') ? document.getElementById('template').value : 'sale_poster';
+    const template = getVal('template', 'sale_poster');
     // derive platform from template to enforce template constraints
     function mapTemplateToPlatform(t) {
         const tt = (t || '').toLowerCase();
@@ -35,11 +40,11 @@ async function generate() {
     }
     platform = mapTemplateToPlatform(template);
     if (platformEl) platformEl.value = platform;
-    const style = document.getElementById("style").value;
-    let width = parseInt(document.getElementById('width').value || '384', 10);
-    let steps = parseInt(document.getElementById('steps').value || '20', 10);
-    const preset = document.getElementById('preset').value;
-    const perfToggle = document.getElementById('perfToggle') && document.getElementById('perfToggle').checked;
+    const style = getVal("style", 'minimal');
+    let width = getNum('width', 384);
+    let steps = getNum('steps', 20);
+    const preset = getVal('preset', 'balanced');
+    const perfToggle = !!getVal('perfToggle', false);
     // apply preset: map presets to sensible steps/width per layout
     (function applyPreset(){
         const defaults = { banner: 960, poster: 512, instagram: 640 };
@@ -48,20 +53,20 @@ async function generate() {
         else if (preset === 'quality') { steps = 40; width = Math.min(1024, Math.round(base * 1.2)); }
         else { steps = 20; width = base; }
         // reflect in hidden inputs so export uses same values
-        const win = document.getElementById('width'); if (win) win.value = width;
-        const sin = document.getElementById('steps'); if (sin) sin.value = steps;
+        const win = $id('width'); if (win) win.value = width;
+        const sin = $id('steps'); if (sin) sin.value = steps;
     })();
-    const btn = document.getElementById('generateBtn');
-    const downloadBtn = document.getElementById('downloadBtn');
+    const btn = $id('generateBtn');
+    const downloadBtn = $id('downloadBtn');
     // Profile selection: performance toggle overrides profile to 'fast'
-    let profile = document.getElementById('profile').value || 'balanced';
+    let profile = getVal('profile', 'balanced') || 'balanced';
     if (perfToggle) {
         profile = 'fast';
         // reflect in select UI
-        const psel = document.getElementById('profile'); if (psel) psel.value = 'fast';
+        const psel = $id('profile'); if (psel) psel.value = 'fast';
     }
 
-    const exactCheckbox = document.getElementById('exactAspect');
+    const exactCheckbox = $id('exactAspect');
     const exact = (exactCheckbox && exactCheckbox.checked) || (profile === 'high'); // exact if checked or high-quality
 
     // If exact is requested, use standard layout sizes to ensure precise aspect ratios
@@ -76,11 +81,11 @@ async function generate() {
     if (exact) {
         width = layoutSizeFor(platform);
         // reflect width in input so user sees it
-        const win = document.getElementById('width'); if (win) win.value = width;
+        const win = $id('width'); if (win) win.value = width;
     }
-    const guidance = parseFloat(document.getElementById('guidance').value || '7');
-    const negative_prompt = document.getElementById('negative_prompt').value.trim();
-    const seedVal = document.getElementById('seed').value;
+    const guidance = parseFloat(getVal('guidance', '7')) || 7;
+    const negative_prompt = (getVal('negative_prompt', '') || '').trim();
+    const seedVal = getVal('seed', '');
     const seed = seedVal ? parseInt(seedVal, 10) : null;
 
     if (!product) {
@@ -89,9 +94,9 @@ async function generate() {
     }
 
     setMessage('Sending request to the generator...', 'info');
-    btn.disabled = true;
+    if (btn) btn.disabled = true;
     showSpinner(true);
-    downloadBtn.style.display = 'none';
+    if (downloadBtn) downloadBtn.style.display = 'none';
 
     try {
         const resp = await fetch(API_BASE + "/generate", {
@@ -121,27 +126,29 @@ async function generate() {
             throw new Error('Unexpected response from server');
         }
 
-        const img = document.getElementById('result');
-        img.src = src;
-        img.onload = () => {
-            showSpinner(false);
-            setMessage('Design generated — preview shown below.', 'success');
-            downloadBtn.style.display = '';
-            // prepare download
-            downloadBtn.onclick = () => {
-                const a = document.createElement('a');
-                a.href = src;
-                a.download = (product.replace(/\s+/g, '_') || 'design') + '.png';
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
+        const img = $id('result');
+        if (img) {
+            img.src = src;
+            img.onload = () => {
+                showSpinner(false);
+                setMessage('Design generated — preview shown below.', 'success');
+                if (downloadBtn) downloadBtn.style.display = '';
+                // prepare download
+                if (downloadBtn) downloadBtn.onclick = () => {
+                    const a = document.createElement('a');
+                    a.href = src;
+                    a.download = (product.replace(/\s+/g, '_') || 'design') + '.png';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                };
+                // enable overlay editing when an image is present
+                try { enableOverlayControls(); } catch(e) { /* ignore if helper missing */ }
+                // Update overlay preview values if overlays exist
+                if ($id('overlayTitle') || $id('overlayLogo')) updateOverlayFromInputs();
+                updatePreviewLayout(platform);
             };
-            // enable overlay editing when an image is present
-            try { enableOverlayControls(); } catch(e) { /* ignore if helper missing */ }
-            // Update overlay preview values
-            updateOverlayFromInputs();
-            updatePreviewLayout(platform);
-        };
+        }
 
     } catch (err) {
         console.error(err);
@@ -154,7 +161,7 @@ async function generate() {
 
 // Preview layout mapping — adjust container height to simulate aspect ratios without re-generating
 function updatePreviewLayout(platform) {
-    const container = document.getElementById('imageContainer');
+    const container = $id('imageContainer');
     if (!container) return;
     if (platform === 'banner') {
         container.style.height = '180px';
@@ -166,83 +173,81 @@ function updatePreviewLayout(platform) {
 }
 
 function updateOverlayFromInputs() {
-    const title = document.getElementById('titleText').value || '';
-    const cta = document.getElementById('ctaText').value || '';
-    const color = document.getElementById('ctaColor').value || '#111827';
-    const pos = document.getElementById('position').value || 'bottom-left';
-    const titleColor = document.getElementById('titleColor') ? document.getElementById('titleColor').value : '#ffffff';
-    const logoEl = document.getElementById('overlayLogo');
-    const logoInput = document.getElementById('logoInput');
-    const logoScale = parseInt(document.getElementById('logoScale')?.value || '120', 10);
+    const title = getVal('titleText', '');
+    const cta = getVal('ctaText', '');
+    const color = getVal('ctaColor', '#111827');
+    const pos = getVal('position', 'bottom-left');
+    const titleColor = $id('titleColor') ? getVal('titleColor', '#ffffff') : '#ffffff';
+    const logoEl = $id('overlayLogo');
+    const logoInput = $id('logoInput');
+    const logoScale = getNum('logoScale', 120);
 
-    const overlay = document.getElementById('overlay');
-    const titleEl = document.getElementById('overlayTitle');
-    const btn = document.getElementById('overlayBtn');
+    const overlay = $id('overlay');
+    const titleEl = $id('overlayTitle');
+    const btn = $id('overlayBtn');
 
-    titleEl.textContent = title;
-    btn.textContent = cta;
-    btn.style.background = color;
-    titleEl.style.color = titleColor;
+    if (titleEl) titleEl.textContent = title;
+    if (btn) { btn.textContent = cta; btn.style.background = color; }
+    if (titleEl) titleEl.style.color = titleColor;
 
     // logo preview handling
-    if (logoInput && logoInput.files && logoInput.files[0]) {
-        const file = logoInput.files[0];
-        const url = URL.createObjectURL(file);
-        logoEl.src = url;
-        logoEl.hidden = false;
-        // scale in preview by setting height (px)
-        logoEl.style.height = logoScale + 'px';
-    } else {
-        logoEl.src = '';
-        logoEl.hidden = true;
+    if (logoEl) {
+        if (logoInput && logoInput.files && logoInput.files[0]) {
+            const file = logoInput.files[0];
+            const url = URL.createObjectURL(file);
+            logoEl.src = url;
+            logoEl.hidden = false;
+            // constrain preview size: allow CSS max-width/max-height but set a sensible max height from the slider
+            logoEl.style.height = 'auto';
+            logoEl.style.maxHeight = logoScale + 'px';
+            logoEl.style.maxWidth = '40%';
+        } else {
+            logoEl.src = '';
+            logoEl.hidden = true;
+        }
     }
-    btn.style.pointerEvents = cta ? 'auto' : 'none';
+    if (btn) btn.style.pointerEvents = cta ? 'auto' : 'none';
 
     // position handling
-    titleEl.style.left = '';
-    titleEl.style.right = '';
-    titleEl.style.top = '';
-    titleEl.style.bottom = '';
-    btn.style.left = '';
-    btn.style.right = '';
-    btn.style.top = '';
-    btn.style.bottom = '';
+    if (titleEl) { titleEl.style.left = ''; titleEl.style.right = ''; titleEl.style.top = ''; titleEl.style.bottom = ''; }
+    if (btn) { btn.style.left = ''; btn.style.right = ''; btn.style.top = ''; btn.style.bottom = ''; }
 
     switch (pos) {
         case 'bottom-left':
-            titleEl.style.left = '20px'; titleEl.style.bottom = '80px';
-            btn.style.left = '20px'; btn.style.bottom = '20px';
+            if (titleEl) { titleEl.style.left = '20px'; titleEl.style.bottom = '80px'; }
+            if (btn) { btn.style.left = '20px'; btn.style.bottom = '20px'; }
             break;
         case 'bottom-right':
-            titleEl.style.right = '20px'; titleEl.style.bottom = '80px';
-            btn.style.right = '20px'; btn.style.bottom = '20px';
+            if (titleEl) { titleEl.style.right = '20px'; titleEl.style.bottom = '80px'; }
+            if (btn) { btn.style.right = '20px'; btn.style.bottom = '20px'; }
             break;
         case 'top-left':
-            titleEl.style.left = '20px'; titleEl.style.top = '20px';
-            btn.style.left = '20px'; btn.style.top = '80px';
+            if (titleEl) { titleEl.style.left = '20px'; titleEl.style.top = '20px'; }
+            if (btn) { btn.style.left = '20px'; btn.style.top = '80px'; }
             break;
         case 'top-right':
-            titleEl.style.right = '20px'; titleEl.style.top = '20px';
-            btn.style.right = '20px'; btn.style.top = '80px';
+            if (titleEl) { titleEl.style.right = '20px'; titleEl.style.top = '20px'; }
+            if (btn) { btn.style.right = '20px'; btn.style.top = '80px'; }
             break;
         case 'center':
-            titleEl.style.left = '50%'; titleEl.style.transform = 'translateX(-50%)'; titleEl.style.top = '40%';
-            btn.style.left = '50%'; btn.style.transform = 'translateX(-50%)'; btn.style.top = '54%';
+            if (titleEl) { titleEl.style.left = '50%'; titleEl.style.transform = 'translateX(-50%)'; titleEl.style.top = '40%'; }
+            if (btn) { btn.style.left = '50%'; btn.style.transform = 'translateX(-50%)'; btn.style.top = '54%'; }
             break;
     }
 }
 
 // export composed design by drawing image + overlays onto a canvas and downloading
-document.getElementById('exportBtn').addEventListener('click', async () => {
-    const platform = document.getElementById('platform').value;
+const _exportBtn = $id('exportBtn');
+if (_exportBtn) _exportBtn.addEventListener('click', async () => {
+    const platform = getVal('platform', 'poster');
     // determine export dims via simple mapping
     let outW = 1024, outH = 1024;
     if (platform === 'banner') { outW = 1920; outH = 640; }
     else if (platform === 'poster') { outW = 1000; outH = 1500; }
     else { outW = 1024; outH = 1024; }
 
-    const img = document.getElementById('result');
-    if (!img.src) { alert('No image to export'); return; }
+    const img = $id('result');
+    if (!img || !img.src) { alert('No image to export'); return; }
 
     // create canvas
     const canvas = document.createElement('canvas');
@@ -267,8 +272,8 @@ document.getElementById('exportBtn').addEventListener('click', async () => {
     ctx.drawImage(full, sx, sy, sw, sh, margin, imageTop, imageW, imageH);
 
     // draw logo top-left if provided
-    const logoInput = document.getElementById('logoInput');
-    const logoScale = parseInt(document.getElementById('logoScale')?.value || '120', 10);
+    const logoInput = $id('logoInput');
+    const logoScale = getNum('logoScale', 120);
     if (logoInput && logoInput.files && logoInput.files[0]) {
         try {
             const file = logoInput.files[0];
@@ -284,8 +289,8 @@ document.getElementById('exportBtn').addEventListener('click', async () => {
     }
 
     // draw title centered at top
-    const title = document.getElementById('titleText').value || '';
-    const titleColor = document.getElementById('titleColor') ? document.getElementById('titleColor').value : '#ffffff';
+    const title = getVal('titleText', '');
+    const titleColor = $id('titleColor') ? getVal('titleColor', '#ffffff') : '#ffffff';
     if (title) {
         const fontSize = Math.floor(outW / 14);
         ctx.font = `${fontSize}px sans-serif`;
@@ -301,8 +306,8 @@ document.getElementById('exportBtn').addEventListener('click', async () => {
     }
 
     // draw CTA near bottom area overlaying image
-    const cta = document.getElementById('ctaText').value || '';
-    const ctaColor = document.getElementById('ctaColor').value || '#111827';
+    const cta = getVal('ctaText', '');
+    const ctaColor = getVal('ctaColor', '#111827');
     if (cta) {
         const btnW = Math.round(outW * 0.2);
         const btnH = Math.round(outH * 0.06);
@@ -324,7 +329,7 @@ document.getElementById('exportBtn').addEventListener('click', async () => {
 });
 
 function productSafeName(){
-    const p = document.getElementById('product');
+    const p = $id('product');
     return p ? p.value.trim().replace(/\s+/g,'_') : '';
 }
 
@@ -365,27 +370,27 @@ function loadFileImage(file){
 
 // wire up overlay input listeners
 ['titleText','ctaText','ctaColor','position'].forEach(id => {
-    const el = document.getElementById(id);
+    const el = $id(id);
     if (el) el.addEventListener('input', updateOverlayFromInputs);
 });
 
 // logo, logoScale and titleColor listeners
 ['logoInput','logoScale','titleColor'].forEach(id => {
-    const el = document.getElementById(id);
+    const el = $id(id);
     if (el) el.addEventListener('input', updateOverlayFromInputs);
 });
 
-const platformEl = document.getElementById('platform');
+const platformEl = $id('platform');
 if (platformEl) platformEl.addEventListener('change', () => updatePreviewLayout(platformEl.value));
 
-// initialize overlay values
-updateOverlayFromInputs();
+// initialize overlay values only if overlay elements present
+if ($id('overlayTitle') || $id('overlayLogo')) updateOverlayFromInputs();
 
 // Performance toggle listener: reflect in profile select
-const perfToggleEl = document.getElementById('perfToggle');
+const perfToggleEl = $id('perfToggle');
 if (perfToggleEl) {
     perfToggleEl.addEventListener('change', () => {
-        const psel = document.getElementById('profile');
+        const psel = $id('profile');
         if (perfToggleEl.checked) {
             if (psel) psel.value = 'fast';
         } else {
@@ -395,13 +400,13 @@ if (perfToggleEl) {
 }
 
 // exact aspect hint: when user toggles exactAspect, update width input to layout size
-const exactEl = document.getElementById('exactAspect');
+const exactEl = $id('exactAspect');
 if (exactEl) {
     exactEl.addEventListener('change', () => {
-        const platform = document.getElementById('platform').value;
+        const platform = getVal('platform', 'poster');
         if (exactEl.checked) {
             const w = (platform === 'banner') ? 960 : (platform === 'poster' ? 512 : 640);
-            const win = document.getElementById('width'); if (win) win.value = w;
+            const win = $id('width'); if (win) win.value = w;
         }
     });
 }
@@ -409,7 +414,7 @@ if (exactEl) {
 // overlay control helpers: enable/disable until image exists
 function disableOverlayControls() {
     ['titleText','ctaText','ctaColor','position','titleColor','subtitleText','logoInput','logoScale','exportBtn','downloadBtn'].forEach(id => {
-        const el = document.getElementById(id);
+        const el = $id(id);
         if (el) el.disabled = true;
     });
 }
@@ -422,15 +427,15 @@ function enableOverlayControls() {
 }
 
 function applyPresetToInputs() {
-    const preset = document.getElementById('preset') ? document.getElementById('preset').value : 'balanced';
-    const platform = document.getElementById('platform') ? document.getElementById('platform').value : 'poster';
+    const preset = getVal('preset', 'balanced');
+    const platform = getVal('platform', 'poster');
     const defaults = { banner: 960, poster: 512, instagram: 640 };
     const base = defaults[platform] || 640;
     let pp = { steps: 20, width: base };
     if (preset === 'fast') pp = { steps: 8, width: Math.max(256, Math.round(base * 0.6)) };
     if (preset === 'quality') pp = { steps: 40, width: Math.min(1024, Math.round(base * 1.2)) };
-    const win = document.getElementById('width'); if (win) win.value = pp.width;
-    const sin = document.getElementById('steps'); if (sin) sin.value = pp.steps;
+    const win = $id('width'); if (win) win.value = pp.width;
+    const sin = $id('steps'); if (sin) sin.value = pp.steps;
 }
 
 // wire preset and template changes to update suggested sizes
