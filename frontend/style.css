@@ -79,13 +79,13 @@ button{background:var(--accent1);color:white;border:none;cursor:pointer;font-wei
 
 .preview-wrap{min-height:260px;display:flex;align-items:center;justify-content:center;border-radius:12px;border:1px dashed rgba(255,255,255,0.03);padding:10px}
 .image-container{position:relative;overflow:hidden;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));width:100%;height:420px;display:flex;align-items:center;justify-content:center}
-.image-container img{max-width:none;min-width:100%;min-height:100%;object-fit:cover;display:block}
+.image-container > img#result{max-width:none;min-width:100%;min-height:100%;object-fit:cover;display:block}
 .overlay{position:absolute;inset:0;pointer-events:none}
 .overlay-title{position:absolute;left:50%;transform:translateX(-50%);top:24px;font-size:36px;color:white;text-shadow:0 6px 18px rgba(0,0,0,0.6);pointer-events:none;max-width:85%;text-align:center}
 .overlay-cta{position:absolute;left:20px;bottom:20px;padding:10px 16px;background:rgba(0,0,0,0.6);color:white;border-radius:8px;border:none;pointer-events:auto}
-.overlay-logo{position:absolute;left:16px;top:16px;height:64px;width:auto;pointer-events:none;z-index:40}
-/* override the generic image sizing so overlay logos don't expand to fill the container */
-.overlay-logo{min-width:initial;min-height:initial;max-width:30%;max-height:22%;object-fit:contain}
+.overlay-logo{position:absolute;left:16px;top:16px;height:auto;width:auto;pointer-events:none;z-index:40}
+/* stronger constraints for overlay logos to avoid filling the preview */
+.overlay-logo{min-width:initial;min-height:initial;max-width:200px;max-height:180px;object-fit:contain}
 
 .overlay-controls{margin-top:12px;display:flex;flex-direction:column;gap:8px}
 .overlay-controls input, .overlay-controls select, .overlay-controls label, .overlay-controls button, .overlay-controls textarea{width:100%;}

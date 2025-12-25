@@ -32,7 +32,7 @@ class DesignRequest(BaseModel):
     template: str = "sale_poster"
     width: int = 384
     steps: int = 20
-    guidance_scale: float = 7.5
+    guidance_scale: float = 8.0
     negative_prompt: Optional[str] = None
     seed: Optional[int] = None
     profile: str = "balanced"

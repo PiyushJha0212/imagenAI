@@ -126,6 +126,13 @@
 
 import torch, os, uuid
 from diffusers import StableDiffusionPipeline, EulerDiscreteScheduler
+try:
+    # prefer DPMSolverMultistep for better sampling quality/speed if available
+    from diffusers import DPMSolverMultistepScheduler
+    _HAS_DPMSOLVER = True
+except Exception:
+    DPMSolverMultistepScheduler = None
+    _HAS_DPMSOLVER = False
 from agent import build_prompt
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -147,14 +154,26 @@ def get_pipe():
     if PIPE is None:
         dtype = torch.float16 if DEVICE == "cuda" else torch.float32
         PIPE = StableDiffusionPipeline.from_pretrained(MODEL, torch_dtype=dtype)
-        PIPE.scheduler = EulerDiscreteScheduler.from_config(PIPE.scheduler.config)
+        # prefer DPMSolverMultistep for improved sampling when available
+        try:
+            if _HAS_DPMSOLVER and DPMSolverMultistepScheduler is not None:
+                PIPE.scheduler = DPMSolverMultistepScheduler.from_config(PIPE.scheduler.config)
+            else:
+                PIPE.scheduler = EulerDiscreteScheduler.from_config(PIPE.scheduler.config)
+        except Exception:
+            PIPE.scheduler = EulerDiscreteScheduler.from_config(PIPE.scheduler.config)
         PIPE = PIPE.to(DEVICE)
         PIPE.enable_attention_slicing()
+        # try to enable memory-efficient attention if present (optional dependency)
+        try:
+            PIPE.enable_xformers_memory_efficient_attention()
+        except Exception:
+            pass
     return PIPE
 
 def generate_design(product, use_case, platform, style,
                     template='sale_poster', width=None, steps=None,
-                    guidance_scale=6.5, negative_prompt=None,
+                    guidance_scale=8.0, negative_prompt=None,
                     seed=None, profile='balanced', exact=False):
     pipe = get_pipe()
 
