@@ -4,6 +4,9 @@ Small local web UI and backend for generating marketing-style images (posters, b
 
 # Team Details 
 Piyush Jha(Leader) :- handled the backend of the ImagenAI and integrate the code .
+
+
+
 Komal Dumka :- handled the logic behind the agent.py and improve the UI/UX of ImagenAi.
 
 # Tech Stack 
